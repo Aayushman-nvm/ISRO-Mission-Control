@@ -71,10 +71,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/catalog" element={<Catalog />} >
-            <Route path="commercial" element={<Commercial />} />
-            <Route path="spacecrafts" element={<SpaceCrafts />} />
-          </Route>
+          <Route path="/catalog" element={<Catalog />} />
+          <Route path="/catalog/commercial" element={<Commercial />} />
+          <Route path="/catalog/spacecrafts" element={<SpaceCrafts />} />
           <Route path="/centers" element={<Centers />} />
         </Routes>
       </main>
