@@ -10,7 +10,7 @@ export const isroStatsApi = createApi({
       query: () => "/launches",
     }),
     getSpacecrafts: builder.query({
-      query: () => "/spacecrafts",
+      query: () => "/spacecraft",
     }),
   }),
 });
