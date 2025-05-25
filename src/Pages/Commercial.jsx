@@ -1,5 +1,7 @@
 import { useGetCommercialQuery } from '../Redux/Services/isroVercelApi';
 import React, { useEffect, useState } from 'react';
+import CommercialCard from '../Components/CommercialCard';
+import FilterTab from '../Components/FilterTab';
 
 function Commercial() {
   const { data: commercial, isLoading, isError } = useGetCommercialQuery();
@@ -19,7 +21,6 @@ function Commercial() {
   }
 
   function handleReset() {
-    setSelectedVehicles([]);
     setSortType(null);
     setDisplayCommercial(allCommercial);
   }
@@ -53,36 +54,24 @@ function Commercial() {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Commercial Launches</h1>
 
-      <div className="space-x-4 mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => handleSort('Ascending')}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Ascending Order
-        </button>
-        <button
-          onClick={() => handleSort('Descending')}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Descending Order
-        </button>
-
-        <button
-          onClick={handleReset}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
-        >
-          Reset
-        </button>
-      </div>
+      <FilterTab
+        handleSort={handleSort}
+        toggleVehicle={() => {}}
+        selectMissionStatus={() => {}}
+        handleReset={handleReset}
+        vehicleTypes={[]}
+        selectedVehicles={[]}
+        missionStatus={null}/>
 
       <div className="space-y-2">
         {displayCommercial.map((launch, index) => (
-          <div key={index} className="p-2 border rounded shadow">
-            <h2 className="text-lg font-semibold">Launch ID: {launch.id}</h2>
-            <p className="text-sm">Date: {launch.launch_date}</p>
-            <p className="text-sm">Country: {launch.country}</p>
-            <p className="text-sm">Launcher: {launch.launcher}</p>
-          </div>
+          <CommercialCard
+            key={index}
+            id={launch.id}
+            country={launch.country}
+            launchDate={launch.launch_date}
+            mass={launch.mass}
+            launcher={launch.launcher}/>
         ))}
       </div>
     </div>
