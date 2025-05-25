@@ -1,8 +1,11 @@
 import React from 'react'
+import SplineScene from '../Components/SplineScene'
 
 function Home() {
   return (
-    <div>Home</div>
+    <div>Home
+      <SplineScene/>
+    </div>
   )
 }
 
