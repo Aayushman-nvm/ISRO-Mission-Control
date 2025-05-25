@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useGetLaunchesQuery } from '../Redux/Services/isroStatsApi';
+import DisplayCard from '../Components/DisplayCard';
+import FilterTab from '../Components/FilterTab';
 
 function Explore() {
-  
   const { data: launches, isLoading, isError } = useGetLaunchesQuery();
   const [allLaunches, setAllLaunches] = useState([]);
   const [displayLaunches, setDisplayLaunches] = useState([]);
   const [sortType, setSortType] = useState(null);
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [missionStatus, setMissionStatus] = useState(null);
+  const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
 
   useEffect(() => {
     if (launches) {
@@ -45,21 +47,32 @@ function Explore() {
 
     let filteredLaunches = [...allLaunches];
 
+    // Vehicle filter
     if (selectedVehicles.length) {
       filteredLaunches = filteredLaunches.filter(launch =>
         selectedVehicles.some(type => launch.LaunchType.includes(type))
       );
     }
 
+    // Mission status filter (unifies failure labels)
     if (missionStatus) {
-      filteredLaunches = filteredLaunches.filter(
-        launch =>
-          launch.MissionStatus.toLowerCase() === missionStatus.toLowerCase()
-      );
+      filteredLaunches = filteredLaunches.filter(launch => {
+        const normalized = launch.MissionStatus?.trim().toLowerCase();
+        if (missionStatus === 'SUCCESSFUL') {
+          return normalized === 'mission successful';
+        } else if (missionStatus === 'UNSUCCESSFUL') {
+          return (
+            normalized === 'mission unsuccessful' ||
+            normalized === 'launch unsuccessful'
+          );
+        }
+        return true;
+      });
     }
 
+    // Sort by date
     if (sortType) {
-      filteredLaunches = filteredLaunches.sort((a, b) => {
+      filteredLaunches.sort((a, b) => {
         const dateA = new Date(a.LaunchDate);
         const dateB = new Date(b.LaunchDate);
         return sortType === 'Ascending' ? dateA - dateB : dateB - dateA;
@@ -76,64 +89,27 @@ function Explore() {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Explore Launches</h1>
 
-      <div className="space-x-4 mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => handleSort('Ascending')}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Ascending Order
-        </button>
-        <button
-          onClick={() => handleSort('Descending')}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Descending Order
-        </button>
-
-        {['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'].map(
-          type => (
-            <button
-              key={type}
-              onClick={() => toggleVehicle(type)}
-              className={`px-4 py-2 rounded text-white ${
-                selectedVehicles.includes(type)
-                  ? 'bg-green-700'
-                  : 'bg-green-500'
-              }`}
-            >
-              {type}
-            </button>
-          )
-        )}
-
-        {['MISSION SUCCESSFUL', 'MISSION UNSUCCESSFUL'].map(status => (
-          <button
-            key={status}
-            onClick={() => selectMissionStatus(status)}
-            className={`px-4 py-2 rounded text-white ${
-              missionStatus === status ? 'bg-purple-700' : 'bg-purple-500'
-            }`}
-          >
-            {status}
-          </button>
-        ))}
-
-        <button
-          onClick={handleReset}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
-        >
-          Reset
-        </button>
-      </div>
+      <FilterTab
+        handleSort={handleSort}
+        toggleVehicle={toggleVehicle}
+        selectMissionStatus={selectMissionStatus}
+        handleReset={handleReset}
+        vehicleTypes={vehicleTypes}
+        selectedVehicles={selectedVehicles}
+        missionStatus={missionStatus}
+      />
 
       <div className="space-y-2">
         {displayLaunches.map(launch => (
-          <div key={launch.UUID} className="p-2 border rounded shadow">
-            <h2 className="text-lg">{launch.LaunchDate}</h2>
-            <p className="text-sm">Type: {launch.LaunchType}</p>
-            <p className="text-sm">Name: {launch.Name}</p>
-            <p className="text-sm">Status: {launch.MissionStatus}</p>
-          </div>
+          <DisplayCard
+            key={launch.UUID}
+            Name={launch.Name}
+            LaunchDate={launch.LaunchDate}
+            LaunchType={launch.LaunchType}
+            Payload={launch.Payload}
+            Link={launch.Link}
+            MissionStatus={launch.MissionStatus}
+          />
         ))}
       </div>
     </div>
