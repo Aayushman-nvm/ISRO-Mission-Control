@@ -1,8 +1,9 @@
-import { useEffect,useState } from 'react';
-import {useGetCentersQuery} from '../Redux/Services/isroVercelApi';
+import { useEffect, useState } from 'react';
+import { useGetCentersQuery } from '../Redux/Services/isroVercelApi';
+import CentersCard from '../Components/CentersCard';
 
 function Centers() {
-  const {data: centers, isLoading, isError} = useGetCentersQuery();
+  const { data: centers, isLoading, isError } = useGetCentersQuery();
   const [displayCenters, setDisplayCenters] = useState([]);
   useEffect(() => {
     if (centers) {
@@ -17,9 +18,12 @@ function Centers() {
         <ul className="list-disc pl-5">
           {displayCenters.map((center, index) => (
             <li key={index} className="mb-2">
-              <h2 className="font-bold">{center.name}</h2>
-              <p>{center.Place}</p>
-              <p>{center.State}</p>
+              <CentersCard
+                id={center.id}
+                name={center.Name}
+                place={center.Place}
+                state={center.State}
+              />
             </li>
           ))}
         </ul>
