@@ -12,6 +12,7 @@ function SpaceCraft() {
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [missionStatus, setMissionStatus] = useState(null);
   const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
+  const statusSet= ['SUCCESSFUL', 'UNSUCCESSFUL'];
 
   useEffect(() => {
     if (spacecrafts) {
@@ -95,6 +96,7 @@ function SpaceCraft() {
         vehicleTypes={vehicleTypes}
         selectedVehicles={selectedVehicles}
         missionStatus={missionStatus}
+        statusSet={statusSet}
       />
 
       <div className="space-y-2">

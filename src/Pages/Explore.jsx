@@ -11,6 +11,7 @@ function Explore() {
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [missionStatus, setMissionStatus] = useState(null);
   const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
+  const statusSet= ['SUCCESSFUL', 'UNSUCCESSFUL'];
 
   useEffect(() => {
     if (launches) {
@@ -97,6 +98,7 @@ function Explore() {
         vehicleTypes={vehicleTypes}
         selectedVehicles={selectedVehicles}
         missionStatus={missionStatus}
+        statusSet={statusSet}
       />
 
       <div className="space-y-2">

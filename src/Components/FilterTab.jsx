@@ -7,7 +7,8 @@ function FilterTab({
   handleReset,
   vehicleTypes,
   selectedVehicles,
-  missionStatus
+  missionStatus,
+  statusSet
 }) {
   return (
     <div className="space-x-4 mb-4 flex flex-wrap gap-2">
@@ -36,7 +37,7 @@ function FilterTab({
         </button>
       ))}
 
-      {['SUCCESSFUL', 'UNSUCCESSFUL'].map(status => (
+      {statusSet?.map(status => (
         <button
           key={status}
           onClick={() => selectMissionStatus(status)}
