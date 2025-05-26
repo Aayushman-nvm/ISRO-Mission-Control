@@ -1,18 +1,19 @@
-import { useGetSpacecraftsQuery } from '../Redux/Services/isroStatsApi'
 import React, { useEffect, useState } from 'react';
+import { useGetSpacecraftsQuery } from '../Redux/Services/isroStatsApi';
 import DisplayCard from '../Components/DisplayCard';
 import FilterTab from '../Components/FilterTab';
 
 function SpaceCraft() {
-
   const { data: spacecrafts, isLoading, isError } = useGetSpacecraftsQuery();
   const [allSpacecrafts, setAllSpacecrafts] = useState([]);
   const [displaySpacecrafts, setDisplaySpacecrafts] = useState([]);
   const [sortType, setSortType] = useState(null);
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [missionStatus, setMissionStatus] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+
   const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
-  const statusSet= ['SUCCESSFUL', 'UNSUCCESSFUL'];
+  const statusSet = ['SUCCESSFUL', 'UNSUCCESSFUL'];
 
   useEffect(() => {
     if (spacecrafts) {
@@ -23,9 +24,7 @@ function SpaceCraft() {
 
   function toggleVehicle(vehicle) {
     setSelectedVehicles(prev =>
-      prev.includes(vehicle)
-        ? prev.filter(v => v !== vehicle)
-        : [...prev, vehicle]
+      prev.includes(vehicle) ? prev.filter(v => v !== vehicle) : [...prev, vehicle]
     );
   }
 
@@ -47,70 +46,78 @@ function SpaceCraft() {
   useEffect(() => {
     if (!allSpacecrafts.length) return;
 
-    let filteredSpacecrafts = [...allSpacecrafts];
+    let filtered = [...allSpacecrafts];
 
     if (selectedVehicles.length) {
-      filteredSpacecrafts = filteredSpacecrafts.filter(launch =>
-        selectedVehicles.some(type => launch.launchVehicle.includes(type))
+      filtered = filtered.filter(sc =>
+        selectedVehicles.some(type => sc.launchVehicle?.includes(type))
       );
     }
 
     if (missionStatus) {
-      filteredSpacecrafts = filteredSpacecrafts.filter(launch => {
-        const normalized = launch.missionStatus?.trim().toLowerCase();
+      filtered = filtered.filter(sc => {
+        const normalized = sc.missionStatus?.trim().toLowerCase();
         if (missionStatus === 'SUCCESSFUL') {
           return normalized === 'mission successful';
-        } else if (missionStatus === 'UNSUCCESSFUL') {
+        } else {
           return (
             normalized === 'mission unsuccessful' ||
             normalized === 'launch unsuccessful'
           );
         }
-        return true;
       });
     }
 
     if (sortType) {
-      filteredSpacecrafts = filteredSpacecrafts.sort((a, b) => {
+      filtered.sort((a, b) => {
         const dateA = new Date(a.launchDate);
         const dateB = new Date(b.launchDate);
         return sortType === 'Ascending' ? dateA - dateB : dateB - dateA;
       });
     }
 
-    setDisplaySpacecrafts(filteredSpacecrafts);
+    setDisplaySpacecrafts(filtered);
   }, [allSpacecrafts, selectedVehicles, missionStatus, sortType]);
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching data</div>;
+  if (isError) return <div>Error fetching spacecraft data.</div>;
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Spacecraft Launches</h1>
+      <h1 className="text-xl font-bold mt-20 md:mt-24 mb-4 md:text-center">Explore Spacecraft Launches</h1>
 
-      <FilterTab
-        handleSort={handleSort}
-        toggleVehicle={toggleVehicle}
-        selectMissionStatus={selectMissionStatus}
-        handleReset={handleReset}
-        vehicleTypes={vehicleTypes}
-        selectedVehicles={selectedVehicles}
-        missionStatus={missionStatus}
-        statusSet={statusSet}
-      />
+      <button
+        onClick={() => setShowFilters(!showFilters)}
+        className="bg-indigo-600 text-white px-4 py-2 rounded mb-4"
+      >
+        {showFilters ? 'Hide Filters' : 'Show Filters'}
+      </button>
 
-      <div className="space-y-2">
-        {displaySpacecrafts.map(launch => (
+      {showFilters && (
+        <FilterTab
+          handleSort={handleSort}
+          toggleVehicle={toggleVehicle}
+          selectMissionStatus={selectMissionStatus}
+          handleReset={handleReset}
+          vehicleTypes={vehicleTypes}
+          selectedVehicles={selectedVehicles}
+          missionStatus={missionStatus}
+          statusSet={statusSet}
+        />
+      )}
+
+      <div className="space-y-4">
+        {displaySpacecrafts.map(sc => (
           <DisplayCard
-            key={launch._id}
-            Name={launch.name}
-            LaunchDate={launch.launchDate}
-            LaunchType={launch.orbitType}
-            MissionStatus={launch.missionStatus}
-            Application={launch.application}
-            OrbitType={launch.orbitType}
-            LaunchVehicle={launch.launchVehicle}
-            Link={launch.link}
+            key={sc._id}
+            Name={sc.name}
+            LaunchDate={sc.launchDate}
+            LaunchType={sc.orbitType}
+            MissionStatus={sc.missionStatus}
+            Application={sc.application}
+            OrbitType={sc.orbitType}
+            LaunchVehicle={sc.launchVehicle}
+            Link={sc.link}
           />
         ))}
       </div>
@@ -118,5 +125,4 @@ function SpaceCraft() {
   );
 }
 
-
-export default SpaceCraft
+export default SpaceCraft;

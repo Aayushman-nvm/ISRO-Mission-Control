@@ -10,8 +10,10 @@ function Explore() {
   const [sortType, setSortType] = useState(null);
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [missionStatus, setMissionStatus] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+
   const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
-  const statusSet= ['SUCCESSFUL', 'UNSUCCESSFUL'];
+  const statusSet = ['SUCCESSFUL', 'UNSUCCESSFUL'];
 
   useEffect(() => {
     if (launches) {
@@ -22,9 +24,7 @@ function Explore() {
 
   function toggleVehicle(vehicle) {
     setSelectedVehicles(prev =>
-      prev.includes(vehicle)
-        ? prev.filter(v => v !== vehicle)
-        : [...prev, vehicle]
+      prev.includes(vehicle) ? prev.filter(v => v !== vehicle) : [...prev, vehicle]
     );
   }
 
@@ -48,30 +48,26 @@ function Explore() {
 
     let filteredLaunches = [...allLaunches];
 
-    // Vehicle filter
     if (selectedVehicles.length) {
       filteredLaunches = filteredLaunches.filter(launch =>
         selectedVehicles.some(type => launch.LaunchType.includes(type))
       );
     }
 
-    // Mission status filter (unifies failure labels)
     if (missionStatus) {
       filteredLaunches = filteredLaunches.filter(launch => {
         const normalized = launch.MissionStatus?.trim().toLowerCase();
         if (missionStatus === 'SUCCESSFUL') {
           return normalized === 'mission successful';
-        } else if (missionStatus === 'UNSUCCESSFUL') {
+        } else {
           return (
             normalized === 'mission unsuccessful' ||
             normalized === 'launch unsuccessful'
           );
         }
-        return true;
       });
     }
 
-    // Sort by date
     if (sortType) {
       filteredLaunches.sort((a, b) => {
         const dateA = new Date(a.LaunchDate);
@@ -88,20 +84,29 @@ function Explore() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Explore Launches</h1>
+      <h1 className="text-xl font-bold mt-20 md:mt-24 mb-4 md:text-center">Explore Launches</h1>
 
-      <FilterTab
-        handleSort={handleSort}
-        toggleVehicle={toggleVehicle}
-        selectMissionStatus={selectMissionStatus}
-        handleReset={handleReset}
-        vehicleTypes={vehicleTypes}
-        selectedVehicles={selectedVehicles}
-        missionStatus={missionStatus}
-        statusSet={statusSet}
-      />
+      <button
+        onClick={() => setShowFilters(!showFilters)}
+        className="bg-indigo-600 text-white px-4 py-2 rounded mb-4"
+      >
+        {showFilters ? 'Hide Filters' : 'Show Filters'}
+      </button>
 
-      <div className="space-y-2">
+      {showFilters && (
+        <FilterTab
+          handleSort={handleSort}
+          toggleVehicle={toggleVehicle}
+          selectMissionStatus={selectMissionStatus}
+          handleReset={handleReset}
+          vehicleTypes={vehicleTypes}
+          selectedVehicles={selectedVehicles}
+          missionStatus={missionStatus}
+          statusSet={statusSet}
+        />
+      )}
+
+      <div className="space-y-4">
         {displayLaunches.map(launch => (
           <DisplayCard
             key={launch.UUID}
@@ -111,6 +116,9 @@ function Explore() {
             Payload={launch.Payload}
             Link={launch.Link}
             MissionStatus={launch.MissionStatus}
+            LaunchVehicle={launch.LaunchVehicle}
+            OrbitType={launch.OrbitType}
+            Application={launch.Application}
           />
         ))}
       </div>

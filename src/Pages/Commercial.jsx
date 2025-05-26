@@ -8,6 +8,7 @@ function Commercial() {
   const [allCommercial, setAllCommercial] = useState([]);
   const [displayCommercial, setDisplayCommercial] = useState([]);
   const [sortType, setSortType] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     if (commercial) {
@@ -29,7 +30,6 @@ function Commercial() {
     const [day, month, year] = dateStr.split('-');
     return new Date(`${year}-${month}-${day}`);
   }
-  
 
   useEffect(() => {
     if (!allCommercial.length) return;
@@ -47,23 +47,34 @@ function Commercial() {
     setDisplayCommercial(filtered);
   }, [allCommercial, sortType]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading data</div>;
+  if (isLoading) return <div className="text-center mt-20">Loading...</div>;
+  if (isError) return <div className="text-center mt-20 text-red-500">Error loading data</div>;
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Commercial Launches</h1>
+      <h1 className="text-xl font-bold mt-20 md:mt-24 mb-4 md:text-center">Commercial Launches</h1>
 
-      <FilterTab
-        handleSort={handleSort}
-        toggleVehicle={() => {}}
-        selectMissionStatus={() => {}}
-        handleReset={handleReset}
-        vehicleTypes={[]}
-        selectedVehicles={[]}
-        missionStatus={null}/>
+      <button
+        onClick={() => setShowFilters(!showFilters)}
+        className="bg-indigo-600 text-white px-4 py-2 rounded mb-4"
+      >
+        {showFilters ? 'Hide Filters' : 'Show Filters'}
+      </button>
 
-      <div className="space-y-2">
+      {showFilters && (
+        <FilterTab
+          handleSort={handleSort}
+          toggleVehicle={() => {}}
+          selectMissionStatus={() => {}}
+          handleReset={handleReset}
+          vehicleTypes={[]}
+          selectedVehicles={[]}
+          missionStatus={null}
+          statusSet={null}
+        />
+      )}
+
+      <div className="space-y-4">
         {displayCommercial.map((launch, index) => (
           <CommercialCard
             key={index}
@@ -71,7 +82,8 @@ function Commercial() {
             country={launch.country}
             launchDate={launch.launch_date}
             mass={launch.mass}
-            launcher={launch.launcher}/>
+            launcher={launch.launcher}
+          />
         ))}
       </div>
     </div>
