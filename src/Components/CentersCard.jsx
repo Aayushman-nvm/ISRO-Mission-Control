@@ -2,7 +2,7 @@ import React from 'react';
 
 function CentersCard({ id, name, place, state }) {
   return (
-    <div className="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-transform transform hover:scale-[1.02] hover:shadow-xl">
+    <div className="bg-white/5 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-transform transform hover:scale-[1.02] hover:shadow-xl">
       <h3 className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
         Center ID: {id}
       </h3>
