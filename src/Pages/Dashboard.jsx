@@ -1,9 +1,138 @@
-import React from 'react'
+import { useEffect, useState } from 'react';
+import { useGetLaunchesQuery } from '../Redux/Services/isroStatsApi';
+import { useGetSpacecraftsQuery } from '../Redux/Services/isroStatsApi';
+import { DataPieChart } from '../Components/Charts/DataPieChart';
+import { LaunchBarChart } from '../Components/Charts/LaunchBarChart';
+import { LaunchAreaChart } from '../Components/Charts/LaunchAreaChart';
 
 function Dashboard() {
+
+  const { data: launchesData, isLoading: launchesLoading, isError: launchesError } = useGetLaunchesQuery();
+  const { data: spaceCraftData, isLoading: spaceCraftLoading, isError: spaceCraftError } = useGetSpacecraftsQuery();
+
+  const vehicles = ["GSLV", "PSLV", "LVM3", "SSLV", "SLV", "ASLV", "testVehicle"];
+
+  const [launchVehicleCount, setLaunchVehicleCount] = useState({
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+  });
+  const [spaceCraftCount, setSpaceCraftCount] = useState({
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+  });
+  const [launchSuccessData, setLaunchSuccessData] = useState({
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+  });
+  const [spacecraftSuccessData, setSpacecraftSuccessData] = useState({
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+  });
+  const [launchesPerYearData, setLaunchesPerYearData] = useState([]);
+
+  function getTotalLaunchVehicle(vehicle) {
+    if (!launchesData) return;
+
+    const count = launchesData.filter((launch) =>
+      launch.Name?.includes(vehicle)
+    ).length;
+
+    setLaunchVehicleCount(prev => ({ ...prev, [vehicle]: count }));
+  }
+
+  function getTotalSpaceCrafts(vehicle) {
+    if (!spaceCraftData) return;
+
+    const count = spaceCraftData.filter((craft) =>
+      craft.launchVehicle?.includes(vehicle)
+    ).length;
+
+    setSpaceCraftCount(prev => ({ ...prev, [vehicle]: count }));
+  }
+
+  function getSuccessfulLaunchMission(vehicle) {
+    if (!launchesData) return;
+
+    const count = launchesData.filter(
+      (launch) =>
+        launch.Name?.includes(vehicle) &&
+        launch.MissionStatus === "MISSION SUCCESSFUL"
+    ).length;
+
+    const totalLaunchesSuccessful = launchesData.filter(
+      (launch) => launch.MissionStatus === "MISSION SUCCESSFUL"
+    ).length;
+
+    setLaunchSuccessData((prev) => ({ ...prev, [vehicle]: count }));
+    setLaunchSuccessData((prev) => ({ ...prev, total: totalLaunchesSuccessful }));
+  }
+
+
+  function getSuccessfulSpaceCraftMission(vehicle) {
+    if (!spaceCraftData) return;
+
+    const count = spaceCraftData.filter(
+      (craft) =>
+        craft.launchVehicle?.includes(vehicle) &&
+        craft.missionStatus === "MISSION SUCCESSFUL"
+    ).length;
+
+    const totalSpaceCraftsSuccessful = spaceCraftData.filter(
+      (craft) => craft.missionStatus === "MISSION SUCCESSFUL"
+    ).length;
+
+    setSpacecraftSuccessData((prev) => ({ ...prev, [vehicle]: count }));
+    setSpacecraftSuccessData((prev) => ({ ...prev, total: totalSpaceCraftsSuccessful }));
+  }
+
+  useEffect(() => {
+    if (!launchesData || !spaceCraftData) return;
+
+    vehicles.forEach((vehicle) => {
+      getTotalLaunchVehicle(vehicle);
+      getTotalSpaceCrafts(vehicle);
+      getSuccessfulLaunchMission(vehicle);
+      getSuccessfulSpaceCraftMission(vehicle);
+    });
+  }, [launchesData, spaceCraftData]);
+
+  useEffect(() => {
+    if (!launchesData) return;
+
+    const yearMap = {};
+
+    launchesData.forEach((launch) => {
+      const year = new Date(launch.LaunchDate).getFullYear();
+      const vehicle = vehicles.find((v) => launch.Name?.includes(v));
+
+      if (!vehicle) return; // skip if no match
+
+      if (!yearMap[year]) yearMap[year] = {};
+      if (!yearMap[year][vehicle]) yearMap[year][vehicle] = 0;
+      yearMap[year][vehicle]++;
+    });
+
+    const formattedData = Object.entries(yearMap).map(([year, vehicleCounts]) => ({
+      year,
+      ...vehicleCounts,
+    }));
+
+    setLaunchesPerYearData(formattedData);
+  }, [launchesData]);
+
   return (
-    <div>Dashboard</div>
+    <div className="min-h-screen bg-black p-6 text-white">
+      <h2 className="text-2xl font-bold mb-6 text-center mt-20 md:mt-24">ISRO Dashboard</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <DataPieChart title="Launches" data={launchVehicleCount} />
+        <DataPieChart title="Spacecrafts" data={spaceCraftCount} />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <LaunchBarChart title="Launch Success Rate" data={launchSuccessData} />
+        <LaunchBarChart title="Spacecraft Success Rate" data={spacecraftSuccessData} />
+      </div>
+      <div className="mt-8">
+        <LaunchAreaChart data={launchesPerYearData} />
+      </div>
+    </div>
   )
+
 }
 
 export default Dashboard
