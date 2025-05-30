@@ -7,12 +7,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/Components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/Components/ui/chart"
 
 export function DataPieChart({ title, data }) {
   const chartData = Object.entries(data || {}).map(([vehicle, count], index) => {
