@@ -29,7 +29,7 @@ const vehicleColors = {
   testVehicle: "	rgba(255, 255, 255, 0.95)",
 };
 
-export function LaunchAreaChart({ data = [] }) {
+export function DataAreaChart({ data = [] }) {
   const chartConfig = Object.fromEntries(
     Object.keys(vehicleColors).map((vehicle) => [
       vehicle,

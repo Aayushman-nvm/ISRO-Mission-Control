@@ -17,7 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-export function LaunchBarChart({ title = "Bar Chart", data = {} }) {
+export function DataBarChart({ title = "Bar Chart", data = {} }) {
   const formattedData = Object.entries(data)
     .filter(([key, value]) => key !== "total" && value !== null)
     .map(([key, value]) => ({

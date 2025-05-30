@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useGetLaunchesQuery } from '../Redux/Services/isroStatsApi';
 import { useGetSpacecraftsQuery } from '../Redux/Services/isroStatsApi';
 import { DataPieChart } from '../Components/Charts/DataPieChart';
-import { LaunchBarChart } from '../Components/Charts/LaunchBarChart';
-import { LaunchAreaChart } from '../Components/Charts/LaunchAreaChart';
+import { DataBarChart } from '../Components/Charts/DataBarChart';
+import { DataAreaChart } from '../Components/Charts/DataYearChart';
 
 function Dashboard() {
 
@@ -101,7 +101,7 @@ function Dashboard() {
       const year = new Date(launch.LaunchDate).getFullYear();
       const vehicle = vehicles.find((v) => launch.Name?.includes(v));
 
-      if (!vehicle) return; // skip if no match
+      if (!vehicle) return;
 
       if (!yearMap[year]) yearMap[year] = {};
       if (!yearMap[year][vehicle]) yearMap[year][vehicle] = 0;
@@ -124,11 +124,11 @@ function Dashboard() {
         <DataPieChart title="Spacecrafts" data={spaceCraftCount} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <LaunchBarChart title="Launch Success Rate" data={launchSuccessData} />
-        <LaunchBarChart title="Spacecraft Success Rate" data={spacecraftSuccessData} />
+        <DataBarChart title="Launch Success Rate" data={launchSuccessData} />
+        <DataBarChart title="Spacecraft Success Rate" data={spacecraftSuccessData} />
       </div>
       <div className="mt-8">
-        <LaunchAreaChart data={launchesPerYearData} />
+        <DataAreaChart data={launchesPerYearData} />
       </div>
     </div>
   )
