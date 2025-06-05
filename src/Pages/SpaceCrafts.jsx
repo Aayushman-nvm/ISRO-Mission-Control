@@ -12,7 +12,7 @@ function SpaceCraft() {
   const [missionStatus, setMissionStatus] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
+  const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Others'];
   const statusSet = ['SUCCESSFUL', 'UNSUCCESSFUL'];
 
   useEffect(() => {
@@ -46,12 +46,21 @@ function SpaceCraft() {
   useEffect(() => {
     if (!allSpacecrafts.length) return;
 
+    const knownVehicles = ['PSLV', 'GSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV'];
     let filtered = [...allSpacecrafts];
 
     if (selectedVehicles.length) {
-      filtered = filtered.filter(sc =>
-        selectedVehicles.some(type => sc.launchVehicle?.startsWith(type))
-      );
+      const includesOthers = selectedVehicles.includes('Others');
+
+      filtered = filtered.filter(sc => {
+        const type = sc.launchVehicle.toUpperCase().trim() || '';
+
+        const isKnown = knownVehicles.some(vehicle => type.startsWith(vehicle));
+
+        if (includesOthers && !isKnown) return true;
+
+        return selectedVehicles.some(selected => selected !== 'others' && type.startsWith(selected))
+      });
     }
 
     if (missionStatus) {
