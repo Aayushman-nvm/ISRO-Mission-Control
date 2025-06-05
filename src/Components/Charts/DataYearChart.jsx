@@ -1,7 +1,14 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
@@ -26,69 +33,77 @@ const vehicleColors = {
   SSLV: "rgba(255, 255, 255, 0.5)",
   SLV: "rgba(255, 255, 255, 0.65)",
   ASLV: "rgba(255, 255, 255, 0.8)",
-  testVehicle: "	rgba(255, 255, 255, 0.95)",
+  testVehicle: "rgba(255, 255, 255, 0.95)",
 };
 
-export function DataAreaChart({ data = [] }) {
-  const chartConfig = Object.fromEntries(
-    Object.keys(vehicleColors).map((vehicle) => [
-      vehicle,
-      { label: vehicle, color: vehicleColors[vehicle] },
-    ])
-  );
+const chartConfig = Object.fromEntries(
+  Object.keys(vehicleColors).map((vehicle) => [
+    vehicle,
+    {
+      label: vehicle,
+      color: vehicleColors[vehicle],
+    },
+  ])
+);
 
+export function DataYearChart({data}) {
   return (
     <Card className="bg-gradient-to-r from-[#0a0a1a] via-transparent to-gray-900/80">
       <CardHeader>
-        <CardTitle>Launches Per Year</CardTitle>
+        <CardTitle className="text-white/60">Launches Per Year</CardTitle>
         <CardDescription>Grouped by Vehicle</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <AreaChart
+          <BarChart
+            layout="vertical"
             data={data}
-            margin={{ left: 12, right: 12, top: 8, bottom: 8 }}
+            margin={{
+              left: 12,
+              right: 16,
+              top: 8,
+              bottom: 8,
+            }}
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="year"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-            />
+            <CartesianGrid horizontal={false} />
             <YAxis
-              allowDecimals={false}
+              dataKey="year"
+              type="category"
               tickLine={false}
+              tickMargin={10}
               axisLine={false}
-              tickMargin={8}
             />
+            <XAxis type="number" />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             {Object.keys(vehicleColors).map((vehicle) => (
-              <Area
+              <Bar
                 key={vehicle}
-                type="monotone"
                 dataKey={vehicle}
-                stroke={vehicleColors[vehicle]}
                 fill={vehicleColors[vehicle]}
-                fillOpacity={0.3}
-              />
+                radius={4}
+                stackId="a"
+              >
+                <LabelList
+                  dataKey={vehicle}
+                  position="right"
+                  offset={8}
+                  className="text-white"
+                  fontSize={12}
+                />
+              </Bar>
             ))}
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Trends over the years <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              From {data[0]?.year || "Start"} to {data[data.length - 1]?.year || "End"}
-            </div>
-          </div>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-2 leading-none font-medium">
+          Trends over the years <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          From {data[0]?.year || "Start"} to {data[data.length - 1]?.year || "End"}
         </div>
       </CardFooter>
     </Card>
