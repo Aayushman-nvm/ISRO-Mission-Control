@@ -10,28 +10,40 @@ function Dashboard() {
   const { data: launchesData, isLoading: launchesLoading, isError: launchesError } = useGetLaunchesQuery();
   const { data: spaceCraftData, isLoading: spaceCraftLoading, isError: spaceCraftError } = useGetSpacecraftsQuery();
 
-  const vehicles = ["GSLV", "PSLV", "LVM3", "SSLV", "SLV", "ASLV", "testVehicle"];
+  const vehicles = ["GSLV", "PSLV", "LVM3", "SSLV", "SLV", "ASLV", "Others"];
+  const knownVehicles = ["GSLV", "PSLV", "LVM3", "SSLV", "SLV", "ASLV"];
 
   const [launchVehicleCount, setLaunchVehicleCount] = useState({
-    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, Others: null,
   });
   const [spaceCraftCount, setSpaceCraftCount] = useState({
-    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, Others: null,
   });
   const [launchSuccessData, setLaunchSuccessData] = useState({
-    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, Others: null,
   });
   const [spacecraftSuccessData, setSpacecraftSuccessData] = useState({
-    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, testVehicle: null,
+    GSLV: null, PSLV: null, LVM3: null, SSLV: null, SLV: null, ASLV: null, Others: null,
   });
   const [launchesPerYearData, setLaunchesPerYearData] = useState([]);
 
   function getTotalLaunchVehicle(vehicle) {
     if (!launchesData) return;
 
-    const count = launchesData.filter((launch) =>
-      launch.Name?.startsWith(vehicle)
-    ).length;
+    const count = launchesData.filter((launch) => {
+      const type = launch.LaunchType?.toLowerCase().trim() || '';
+
+      const isKnown = knownVehicles.some((v) => type.startsWith(v.toLowerCase()));
+      const isTarget = vehicle.toLowerCase();
+
+      const includesOthers = isTarget === 'others';
+
+      if (includesOthers && !isKnown) return true;
+
+      if (!includesOthers && type.startsWith(isTarget)) return true;
+
+      return false;
+    }).length;
 
     setLaunchVehicleCount(prev => ({ ...prev, [vehicle]: count }));
   }
@@ -39,8 +51,20 @@ function Dashboard() {
   function getTotalSpaceCrafts(vehicle) {
     if (!spaceCraftData) return;
 
-    const count = spaceCraftData.filter((craft) =>
-      craft.launchVehicle?.startsWith(vehicle)
+    const count = spaceCraftData.filter((craft) => {
+      const type = craft.launchVehicle?.toLowerCase().trim() || '';
+
+      const isKnown = knownVehicles.some((v) => type.startsWith(v.toLowerCase()));
+      const isTarget = vehicle.toLowerCase();
+
+      const includesOthers = isTarget === 'others';
+
+      if (includesOthers && !isKnown) return true;
+
+      if (!includesOthers && type.startsWith(isTarget)) return true;
+
+      return false;
+    }
     ).length;
 
     setSpaceCraftCount(prev => ({ ...prev, [vehicle]: count }));
@@ -49,36 +73,48 @@ function Dashboard() {
   function getSuccessfulLaunchMission(vehicle) {
     if (!launchesData) return;
 
-    const count = launchesData.filter(
-      (launch) =>
-        launch.Name?.startsWith(vehicle) &&
-        launch.MissionStatus === "MISSION SUCCESSFUL"
-    ).length;
+    const isOthers = vehicle.toLowerCase() === 'others';
 
-    const totalLaunchesSuccessful = launchesData.filter(
-      (launch) => launch.MissionStatus === "MISSION SUCCESSFUL"
-    ).length;
+    const count = launchesData.filter((launch) => {
+      const type = launch.LaunchType?.toLowerCase().trim() || '';
+      const status = launch.MissionStatus?.trim().toLowerCase();
+
+      const isSuccess = status === 'mission successful';
+      const isKnown = knownVehicles.some((v) => type.startsWith(v.toLowerCase()));
+
+      return (
+        isSuccess &&
+        (
+          (isOthers && !isKnown) ||
+          (!isOthers && type.startsWith(vehicle.toLowerCase()))
+        )
+      );
+    }).length;
 
     setLaunchSuccessData((prev) => ({ ...prev, [vehicle]: count }));
-    setLaunchSuccessData((prev) => ({ ...prev, total: totalLaunchesSuccessful }));
   }
 
 
   function getSuccessfulSpaceCraftMission(vehicle) {
     if (!spaceCraftData) return;
 
-    const count = spaceCraftData.filter(
-      (craft) =>
-        craft.launchVehicle?.startsWith(vehicle) &&
-        craft.missionStatus === "MISSION SUCCESSFUL"
-    ).length;
+    const isOthers = vehicle.toLowerCase() === 'others';
+    const count = spaceCraftData.filter((craft) => {
+      const type = craft.launchVehicle?.toLowerCase().trim() || '';
+      const status = craft.missionStatus?.trim().toLowerCase();
 
-    const totalSpaceCraftsSuccessful = spaceCraftData.filter(
-      (craft) => craft.missionStatus === "MISSION SUCCESSFUL"
-    ).length;
+      const isSuccess = status === 'mission successful';
+      const isKnown = knownVehicles.some((v) => type.startsWith(v.toLowerCase()));
 
+      return (
+        isSuccess &&
+        (
+          (isOthers && !isKnown) ||
+          (!isOthers && type.startsWith(vehicle.toLowerCase()))
+        )
+      );
+    }).length;
     setSpacecraftSuccessData((prev) => ({ ...prev, [vehicle]: count }));
-    setSpacecraftSuccessData((prev) => ({ ...prev, total: totalSpaceCraftsSuccessful }));
   }
 
   useEffect(() => {
