@@ -5,8 +5,8 @@ import NavBlock from '../Components/NavBlock';
 function Home() {
   const navBlockArr = [
     { id: 1, title: "Explore Missions", to: "/explore", description: "Track past and present missions, launch stats, and key milestones." },
-    { id: 2, title: "Spacecrafts Catalog", to: "/spacecrafts", description: "Browse through ISRO's rich fleet of satellites and spacecrafts." },
-    { id: 3, title: "Commercial Ventures", to: "/commercial", description: "Explore ISRO’s commercial collaborations and service catalog." },
+    { id: 2, title: "Spacecrafts Catalog", to: "/catalog/spacecrafts", description: "Browse through ISRO's rich fleet of satellites and spacecrafts." },
+    { id: 3, title: "Commercial Ventures", to: "/catalog/commercial", description: "Explore ISRO’s commercial collaborations and service catalog." },
     { id: 4, title: "Statistics Dashboard", to: "/dashboard", description: "Visualize space data, analyze trends, and understand impact." },
     { id: 5, title: "ISRO Centers", to: "/centers", description: "Get detailed insights into ISRO’s regional centers and research hubs." },
     { id: 6, title: "About ISROverse", to: "/about", description: "Learn about the vision behind this project and the APIs used." },
