@@ -12,11 +12,11 @@ function FilterTab({
 }) {
   return (
     <div className="mb-4">
-      <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md border dark:border-gray-700 flex flex-col gap-6">
+      <div className="p-4 bg-gray-900 rounded-lg shadow-md border dark:border-gray-700 flex flex-col gap-6">
 
         {/* Order Section */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <span className="font-semibold text-gray-800 dark:text-gray-200 w-32">Order</span>
+          <span className="font-semibold text-gray-200 w-32">Order</span>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleSort('Ascending')}
@@ -36,7 +36,7 @@ function FilterTab({
         {/* Vehicle Type Section */}
         {vehicleTypes?.length > 0 && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <span className="font-semibold text-gray-800 dark:text-gray-200 w-32">Vehicle Type</span>
+            <span className="font-semibold text-gray-200 w-32">Vehicle Type</span>
             <div className="flex flex-wrap gap-2">
               {vehicleTypes.map(type => (
                 <button
@@ -58,7 +58,7 @@ function FilterTab({
         {/* Mission Status Section */}
         {statusSet?.length > 0 && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <span className="font-semibold text-gray-800 dark:text-gray-200 w-32">Mission Status</span>
+            <span className="font-semibold text-gray-200 w-32">Mission Status</span>
             <div className="flex flex-wrap gap-2">
               {statusSet.map(status => (
                 <button
@@ -79,7 +79,7 @@ function FilterTab({
 
         {/* Reset Section */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <span className="font-semibold text-gray-800 dark:text-gray-200 w-32">Reset</span>
+          <span className="font-semibold text-gray-200 w-32">Reset</span>
           <button
             onClick={handleReset}
             className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-md transition"
