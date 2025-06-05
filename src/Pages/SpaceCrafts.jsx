@@ -50,7 +50,7 @@ function SpaceCraft() {
 
     if (selectedVehicles.length) {
       filtered = filtered.filter(sc =>
-        selectedVehicles.some(type => sc.launchVehicle?.includes(type))
+        selectedVehicles.some(type => sc.launchVehicle?.startsWith(type))
       );
     }
 

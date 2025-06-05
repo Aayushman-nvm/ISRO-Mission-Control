@@ -26,7 +26,7 @@ function Explore() {
     setSelectedVehicles(prev =>
       prev.includes(vehicle) ? prev.filter(v => v !== vehicle) : [...prev, vehicle]
     );
-  }
+  }  
 
   function selectMissionStatus(status) {
     setMissionStatus(prev => (prev === status ? null : status));
@@ -50,7 +50,7 @@ function Explore() {
 
     if (selectedVehicles.length) {
       filteredLaunches = filteredLaunches.filter(launch =>
-        selectedVehicles.some(type => launch.LaunchType.includes(type))
+        selectedVehicles.some(type => launch.LaunchType.startsWith(type))
       );
     }
 
