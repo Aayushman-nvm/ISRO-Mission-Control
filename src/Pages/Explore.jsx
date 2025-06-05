@@ -12,7 +12,7 @@ function Explore() {
   const [missionStatus, setMissionStatus] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Test vehicle'];
+  const vehicleTypes = ['GSLV', 'PSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV', 'Others'];
   const statusSet = ['SUCCESSFUL', 'UNSUCCESSFUL'];
 
   useEffect(() => {
@@ -45,15 +45,24 @@ function Explore() {
 
   useEffect(() => {
     if (!allLaunches.length) return;
-
+  
+    const knownVehicles = ['PSLV', 'GSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV'];
     let filteredLaunches = [...allLaunches];
-
+  
     if (selectedVehicles.length) {
-      filteredLaunches = filteredLaunches.filter(launch =>
-        selectedVehicles.some(type => launch.LaunchType.startsWith(type))
-      );
+      const includesOthers = selectedVehicles.includes("Others");
+  
+      filteredLaunches = filteredLaunches.filter(launch => {
+        const type = launch.LaunchType?.toUpperCase().trim();
+  
+        const isKnown = knownVehicles.some(vehicle => type.startsWith(vehicle));
+  
+        if (includesOthers && !isKnown) return true;
+  
+        return selectedVehicles.some(selected => selected !== "Others" && type.startsWith(selected));
+      });
     }
-
+  
     if (missionStatus) {
       filteredLaunches = filteredLaunches.filter(launch => {
         const normalized = launch.MissionStatus?.trim().toLowerCase();
@@ -67,7 +76,7 @@ function Explore() {
         }
       });
     }
-
+  
     if (sortType) {
       filteredLaunches.sort((a, b) => {
         const dateA = new Date(a.LaunchDate);
@@ -75,9 +84,10 @@ function Explore() {
         return sortType === 'Ascending' ? dateA - dateB : dateB - dateA;
       });
     }
-
+  
     setDisplayLaunches(filteredLaunches);
   }, [allLaunches, selectedVehicles, missionStatus, sortType]);
+  
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching data</div>;
