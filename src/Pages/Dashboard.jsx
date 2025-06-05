@@ -3,7 +3,7 @@ import { useGetLaunchesQuery } from '../Redux/Services/isroStatsApi';
 import { useGetSpacecraftsQuery } from '../Redux/Services/isroStatsApi';
 import { DataPieChart } from '../Components/Charts/DataPieChart';
 import { DataBarChart } from '../Components/Charts/DataBarChart';
-import { DataAreaChart } from '../Components/Charts/DataYearChart';
+import { DataYearChart } from '../Components/Charts/DataYearChart';
 
 function Dashboard() {
 
@@ -30,7 +30,7 @@ function Dashboard() {
     if (!launchesData) return;
 
     const count = launchesData.filter((launch) =>
-      launch.Name?.includes(vehicle)
+      launch.Name?.startsWith(vehicle)
     ).length;
 
     setLaunchVehicleCount(prev => ({ ...prev, [vehicle]: count }));
@@ -40,7 +40,7 @@ function Dashboard() {
     if (!spaceCraftData) return;
 
     const count = spaceCraftData.filter((craft) =>
-      craft.launchVehicle?.includes(vehicle)
+      craft.launchVehicle?.startsWith(vehicle)
     ).length;
 
     setSpaceCraftCount(prev => ({ ...prev, [vehicle]: count }));
@@ -51,7 +51,7 @@ function Dashboard() {
 
     const count = launchesData.filter(
       (launch) =>
-        launch.Name?.includes(vehicle) &&
+        launch.Name?.startsWith(vehicle) &&
         launch.MissionStatus === "MISSION SUCCESSFUL"
     ).length;
 
@@ -69,7 +69,7 @@ function Dashboard() {
 
     const count = spaceCraftData.filter(
       (craft) =>
-        craft.launchVehicle?.includes(vehicle) &&
+        craft.launchVehicle?.startsWith(vehicle) &&
         craft.missionStatus === "MISSION SUCCESSFUL"
     ).length;
 
@@ -99,7 +99,7 @@ function Dashboard() {
 
     launchesData.forEach((launch) => {
       const year = new Date(launch.LaunchDate).getFullYear();
-      const vehicle = vehicles.find((v) => launch.Name?.includes(v));
+      const vehicle = vehicles.find((v) => launch.Name?.startsWith(v));
 
       if (!vehicle) return;
 
@@ -124,11 +124,11 @@ function Dashboard() {
         <DataPieChart title="Spacecrafts" data={spaceCraftCount} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <DataBarChart title="Launch Success Rate" data={launchSuccessData} />
-        <DataBarChart title="Spacecraft Success Rate" data={spacecraftSuccessData} />
+        <DataBarChart title="Successful Launches" data={launchSuccessData} />
+        <DataBarChart title="Successful Spacecrafts" data={spacecraftSuccessData} />
       </div>
       <div className="mt-8">
-        <DataAreaChart data={launchesPerYearData} />
+        <DataYearChart data={launchesPerYearData} />
       </div>
     </div>
   )

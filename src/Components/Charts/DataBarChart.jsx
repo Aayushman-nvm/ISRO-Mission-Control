@@ -35,8 +35,8 @@ export function DataBarChart({ title = "Bar Chart", data = {} }) {
   return (
     <Card className="bg-gradient-to-r from-[#0a0a1a] via-transparent to-gray-900/80">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>Mission counts per launch vehicle</CardDescription>
+        <CardTitle className="text-white/60 text-2xl">{title}</CardTitle>
+        <CardDescription className="text-white">Mission counts per launch vehicle that were positive</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
