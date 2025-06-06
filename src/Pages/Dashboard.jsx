@@ -4,6 +4,8 @@ import { useGetSpacecraftsQuery } from '../Redux/Services/isroStatsApi';
 import { DataPieChart } from '../Components/Charts/DataPieChart';
 import { DataBarChart } from '../Components/Charts/DataBarChart';
 import { DataYearChart } from '../Components/Charts/DataYearChart';
+import Lottie from 'lottie-react';
+import Loader from '../assets/loader.json';
 
 function Dashboard() {
 
@@ -152,6 +154,20 @@ function Dashboard() {
     setLaunchesPerYearData(formattedData);
   }, [launchesData]);
 
+  if (launchesLoading || spaceCraftLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white">
+        <Lottie
+          animationData={Loader}
+          loop={true}
+          className="w-40 h-40 md:w-52 md:h-52"
+        />
+      </div>
+    );
+  }
+  if (launchesError || spaceCraftError) {
+    <div className="min-h-screen flex items-center justify-center bg-black text-red-500">Error fetching data</div>;
+  }
   return (
     <div className="min-h-screen bg-black p-6 text-white">
       <h2 className="text-2xl font-bold mb-6 text-center mt-20 md:mt-24">ISRO Dashboard</h2>

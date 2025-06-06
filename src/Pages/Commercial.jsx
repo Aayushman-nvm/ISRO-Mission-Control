@@ -2,6 +2,8 @@ import { useGetCommercialQuery } from '../Redux/Services/isroVercelApi';
 import React, { useEffect, useState } from 'react';
 import CommercialCard from '../Components/CommercialCard';
 import FilterTab from '../Components/FilterTab';
+import Lottie from 'lottie-react';
+import Loader from '../assets/loader.json';
 
 function Commercial() {
   const { data: commercial, isLoading, isError } = useGetCommercialQuery();
@@ -47,8 +49,16 @@ function Commercial() {
     setDisplayCommercial(filtered);
   }, [allCommercial, sortType]);
 
-  if (isLoading) return <div className="text-center mt-20">Loading...</div>;
-  if (isError) return <div className="text-center mt-20 text-red-500">Error loading data</div>;
+  if (isLoading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white">
+      <Lottie
+        animationData={Loader}
+        loop={true}
+        className="w-40 h-40 md:w-52 md:h-52"
+      />
+    </div>
+  );
+  if (isError) return <div className="min-h-screen flex items-center justify-center bg-black text-red-500">Error loading data</div>;
 
   return (
     <div className="p-4">
@@ -64,8 +74,8 @@ function Commercial() {
       {showFilters && (
         <FilterTab
           handleSort={handleSort}
-          toggleVehicle={() => {}}
-          selectMissionStatus={() => {}}
+          toggleVehicle={() => { }}
+          selectMissionStatus={() => { }}
           handleReset={handleReset}
           vehicleTypes={[]}
           selectedVehicles={[]}

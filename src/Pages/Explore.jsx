@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useGetLaunchesQuery } from '../Redux/Services/isroStatsApi';
 import DisplayCard from '../Components/DisplayCard';
 import FilterTab from '../Components/FilterTab';
+import Lottie from 'lottie-react';
+import Loader from '../assets/loader.json';
 
 function Explore() {
   const { data: launches, isLoading, isError } = useGetLaunchesQuery();
@@ -26,7 +28,7 @@ function Explore() {
     setSelectedVehicles(prev =>
       prev.includes(vehicle) ? prev.filter(v => v !== vehicle) : [...prev, vehicle]
     );
-  }  
+  }
 
   function selectMissionStatus(status) {
     setMissionStatus(prev => (prev === status ? null : status));
@@ -45,24 +47,24 @@ function Explore() {
 
   useEffect(() => {
     if (!allLaunches.length) return;
-  
+
     const knownVehicles = ['PSLV', 'GSLV', 'LVM3', 'SSLV', 'SLV', 'ASLV'];
     let filteredLaunches = [...allLaunches];
-  
+
     if (selectedVehicles.length) {
       const includesOthers = selectedVehicles.includes("Others");
-  
+
       filteredLaunches = filteredLaunches.filter(launch => {
         const type = launch.LaunchType?.toUpperCase().trim();
-  
+
         const isKnown = knownVehicles.some(vehicle => type.startsWith(vehicle));
-  
+
         if (includesOthers && !isKnown) return true;
-  
+
         return selectedVehicles.some(selected => selected !== "Others" && type.startsWith(selected));
       });
     }
-  
+
     if (missionStatus) {
       filteredLaunches = filteredLaunches.filter(launch => {
         const normalized = launch.MissionStatus?.trim().toLowerCase();
@@ -76,7 +78,7 @@ function Explore() {
         }
       });
     }
-  
+
     if (sortType) {
       filteredLaunches.sort((a, b) => {
         const dateA = new Date(a.LaunchDate);
@@ -84,13 +86,22 @@ function Explore() {
         return sortType === 'Ascending' ? dateA - dateB : dateB - dateA;
       });
     }
-  
+
     setDisplayLaunches(filteredLaunches);
   }, [allLaunches, selectedVehicles, missionStatus, sortType]);
-  
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching data</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white">
+        <Lottie
+          animationData={Loader}
+          loop={true}
+          className="w-40 h-40 md:w-52 md:h-52"
+        />
+      </div>
+    );
+  }
+  if (isError) return <div className="min-h-screen flex items-center justify-center bg-black text-red-500">Error fetching data</div>;
 
   return (
     <div className="p-4">
