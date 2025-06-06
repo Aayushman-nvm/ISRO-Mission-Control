@@ -6,6 +6,7 @@ import Dashboard from './Pages/Dashboard';
 import Explore from './Pages/Explore';
 import Home from './Pages/Home';
 import SpaceCrafts from './Pages/SpaceCrafts';
+import About from './Pages/About';
 import NavBar from './Components/NavBar';
 import Footer from './Components/Footer';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/catalog/commercial" element={<Commercial />} />
           <Route path="/catalog/spacecrafts" element={<SpaceCrafts />} />
           <Route path="/centers" element={<Centers />} />
+          <Route path="/about" element={<About/>} />
         </Routes>
       </main>
 
