@@ -66,8 +66,8 @@ This project uses **open-source ISRO APIs**, primarily:
 ## 🧪 Run Locally
 
 ```bash
-git clone https://github.com/yourusername/isrovers.git
-cd isrovers
+git clone https://github.com/Aayushman-nvm/ISRO-Mission-Control.git
+cd ISRO-Mission-Control
 npm install
 npm run dev
 ```
